@@ -1,5 +1,5 @@
 import React from "react";
-import { vowels } from "../utils";
+import { vowels, diacritics } from "../utils";
 
 function KeyRow({ glyphs, prevChar, blacklist, onType }) {
   return (
@@ -15,7 +15,11 @@ function KeyRow({ glyphs, prevChar, blacklist, onType }) {
             (g === "" && blacklist.has(prevChar))
           }
         >
-          {g}
+          {!vowels[prevChar] &&
+          diacritics[g] &&
+          (prevChar !== "\u2190" || prevChar !== "\u2191")
+            ? prevChar + g
+            : g}
         </button>
       ))}
     </div>
