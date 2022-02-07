@@ -11,7 +11,7 @@ function Header({ onShow }) {
     >
       <div className="py-2">
         <button
-          className="button is-white has-text-grey-light"
+          className="button is-white has-text-grey"
           onClick={() => onShow(PAGES.INSTRUCTIONS)}
         >
           <span className="icon">
@@ -20,11 +20,11 @@ function Header({ onShow }) {
         </button>
       </div>
       <div className="my-3 px-3">
-        <h1 className="is-size-6 has-text-weight-bold">தமிழ் வோர்டில்</h1>
+        <h1 className="is-size-6 has-text-weight-bold pt-2">சொல்லோடு</h1>
       </div>
       <div className="py-2">
         <button
-          className="button is-white has-text-grey-light"
+          className="button is-white has-text-grey"
           onClick={() => onShow(PAGES.SETTINGS)}
         >
           <span className="icon">

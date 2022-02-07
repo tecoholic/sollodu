@@ -3,7 +3,6 @@ import { set as dbset, get as dbget } from "lockr";
 import "./App.css";
 import Header from "./components/Header";
 import Workbench from "./components/Workbench";
-import axios from "axios";
 import Keyboard from "./components/Keyboard";
 import { diacritics, toTamilLetters } from "./utils";
 import Settings from "./components/Settings";
@@ -44,21 +43,6 @@ function App() {
       }
     }
   }
-
-  useEffect(() => {
-    if (!lengthLoaded) {
-      axios
-        .get("https://tamilwordle-maleycpqdq-el.a.run.app/get-current-word-len")
-        .then((res) => {
-          setWordLength(res.data.Length);
-          setLengthLoaded(true);
-        })
-        .catch((e) => {
-          console.log(e);
-          alert("Failed to load app");
-        });
-    }
-  }, [lengthLoaded]);
 
   const typeChar = (c) => {
     let letters = toTamilLetters(currentWord);
