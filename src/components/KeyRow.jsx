@@ -17,6 +17,7 @@ function KeyRow({ glyphs, prevChar, blacklist, onType }) {
         >
           {!vowels[prevChar] &&
           diacritics[g] &&
+          !diacritics[prevChar] &&
           (prevChar !== "\u2190" || prevChar !== "\u2191")
             ? prevChar + g
             : g}
