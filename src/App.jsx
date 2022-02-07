@@ -4,7 +4,12 @@ import "./App.css";
 import Header from "./components/Header";
 import Workbench from "./components/Workbench";
 import Keyboard from "./components/Keyboard";
-import { diacritics, toTamilLetters } from "./utils";
+import {
+  diacritics,
+  toTamilLetters,
+  parseWordsFromQuery,
+  tamilLength,
+} from "./utils";
 import Settings from "./components/Settings";
 import { PAGES } from "./utils";
 import Success from "./components/Success";
@@ -25,8 +30,10 @@ function App() {
       ? PAGES.SUCCESS
       : PAGES.WORKBENCH
   );
-  const [wordLength, setWordLength] = useState(5);
-  const [lengthLoaded, setLengthLoaded] = useState(false);
+  const [words, setWords] = useState(parseWordsFromQuery());
+  const [wordLength, setWordLength] = useState(
+    words.length ? tamilLength(words[0]) : 0
+  );
   const [currentWord, setCurrentWord] = useState("");
   const [blacklist, setBlackList] = useState(new Set());
   const [settings, setSettings] = useState(dbget("userPreferences"));
@@ -119,9 +126,6 @@ function App() {
         }
       >
         <Header onShow={handleHeaderOnShow} />
-        {!lengthLoaded ? (
-          <section className="section">Loading...</section>
-        ) : null}
         {currentPage === PAGES.SETTINGS ? (
           <Settings
             settings={settings}
@@ -132,6 +136,7 @@ function App() {
           <Success />
         ) : (
           <Workbench
+            word={words[0]}
             length={wordLength}
             letters={toTamilLetters(currentWord)}
             complete={succeeded}

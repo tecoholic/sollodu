@@ -1,46 +1,29 @@
 import { toTamilLetters, vowels } from "../utils";
 
-const verify = (letters) => {
-  let word = "உதயசூரியன்";
-  let REF = toTamilLetters(word);
-  let results = Array(letters.length).fill("LETTER_NOT_FOUND");
+const verify = (word, attempt) => {
+  const REF = toTamilLetters(word);
+  const ATT = toTamilLetters(attempt);
+  let results = Array(ATT.length).fill("INVALID");
 
-  for (let i = 0; i < letters.length; i++) {
+  for (let i = 0; i < ATT.length; i++) {
+    let mei = ATT[i][0];
+
     // letter exists in the exact position
-    console.log("processing: ", letters[i]);
-
-    if (REF[i] === letters[i]) {
+    if (REF[i] === ATT[i]) {
       results[i] = "FOUND";
-      console.log("FOUND");
-      continue;
+    } else if (REF.indexOf(ATT[i]) !== -1) {
+      results[i] = "OTHER POSITION";
+    } else if (vowels[mei]) {
+      // MEI match
+      continue; // vowel found - no uyir mei checks
+    } else if (REF[i].includes(mei)) {
+      results[i] = "MEI MATCH";
+    } else if (
+      (ATT[i].length === 2 && REF[i].includes(ATT[i][1])) || // the diacritic matches
+      (ATT[i].length === 1 && REF[i].length === 1 && !vowels[ATT[i]]) // akara varisai matches (without diacritic)
+    ) {
+      results[i] = "UYIR MATCH";
     }
-    if (REF.indexOf(letters[i]) !== -1) {
-      results = "OTHER POSITION";
-      console.log("OTHER POSITION");
-      continue;
-    }
-
-    // MEI match
-    let mei = letters[i][0];
-    if (vowels[mei]) {
-      console.log("Vowel found");
-      continue;
-    } else {
-      if (REF[i].includes(mei)) {
-        console.log("MEI MATCH");
-        results[i] = "MEI MATCH";
-        continue;
-      }
-    }
-
-    if (letters[i].length === 2) {
-      let kombu = letters[i][1];
-      if (REF[i].includes(kombu)) {
-        console.log("UYIR MATCH");
-        results[i] = "UYIR MATCH";
-      }
-    }
-    console.log("INVALID");
   }
   return results;
 };

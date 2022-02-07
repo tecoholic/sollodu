@@ -1,15 +1,16 @@
 import React from "react";
+import { vowelOfDiacritic } from "../utils";
 
 function Cell({ letter, status, borderColor }) {
   let sclass;
   switch (status) {
-    case "LETTER_ELSEWHERE":
+    case "OTHER POSITION":
       sclass = "has-background-warning";
       break;
-    case "LETTER_MATCHED":
+    case "FOUND":
       sclass = "has-background-success";
       break;
-    case "LETTER_NOT_FOUND":
+    case "INVALID":
       sclass = "has-background-grey-lighter";
       break;
     default:
@@ -19,6 +20,16 @@ function Cell({ letter, status, borderColor }) {
   return (
     <div className={`cell ${sclass}`} style={{ borderColor }}>
       {letter}
+      {status === "MEI MATCH" && (
+        <span className="badge badge-mei-match">{letter[0]}</span>
+      )}
+      {status === "UYIR MATCH" && (
+        <span className="badge badge-uyir-match">
+          {letter.length === 2
+            ? vowelOfDiacritic[letter[1]]
+            : vowelOfDiacritic[""]}
+        </span>
+      )}
     </div>
   );
 }

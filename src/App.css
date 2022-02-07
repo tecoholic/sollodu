@@ -10,6 +10,7 @@
   height: 3rem;
   line-height: 3rem;
   font-size: 1.2rem;
+  position: relative;
 
   border: 2px solid #888;
   margin: 0.5rem;
@@ -69,4 +70,31 @@
 
 .key:disabled {
   background-color: #ccc;
+}
+
+.badge {
+  background-color: #ccc;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  font-size: 1rem;
+  height: 1.5rem;
+  line-height: 8px;
+  min-width: 1.5rem;
+  overflow: hidden;
+  padding: 0.35rem 0.15rem;
+  position: absolute;
+  right: 0;
+  text-overflow: ellipsis;
+  top: 0;
+  white-space: nowrap;
+  color: #fff;
+  font-weight: bold;
+}
+
+.badge-mei-match {
+  background-color: #48c78e !important;
+}
+
+.badge-uyir-match {
+  background-color: #48c78e !important;
 }

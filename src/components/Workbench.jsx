@@ -7,6 +7,7 @@ import verifier from "./verifier";
 const historykey = new Date().toDateString().replace(/ /g, "-");
 
 function Workbench({
+  word,
   length,
   letters,
   complete,
@@ -24,7 +25,7 @@ function Workbench({
       return;
     }
     // call the API only when all the boxes are full
-    let results = verifier(letters);
+    let results = verifier(word, letters);
     setGuesses([...guesses, { letters, results }]);
     let wrongLetters = letters.filter(
       (l, i) => results[i] === "LETTER_NOT_FOUND"
