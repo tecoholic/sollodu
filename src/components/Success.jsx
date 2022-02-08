@@ -1,15 +1,15 @@
 import React from "react";
-import { get as dbget } from "lockr";
 
 const ICONS = {
-  LETTER_NOT_FOUND: "⚫",
-  LETTER_ELSEWHERE: "🟡",
-  LETTER_MATCHED: "🟢",
+  INVALID: "⚫",
+  "OTHER POSITION": "🟡",
+  FOUND: "🟢",
+  "MEI MATCH": "",
+  "UYIR MATCH": "",
 };
 
 function Success() {
-  const historykey = new Date().toDateString().replace(/ /g, "-");
-  let guesses = dbget("guessHistory")[historykey];
+  let guesses = [];
 
   const triggerShare = () => {
     let d = new Date();

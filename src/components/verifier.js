@@ -1,30 +1,49 @@
 import { toTamilLetters, vowels } from "../utils";
 
 const verify = (word, attempt) => {
-  const REF = toTamilLetters(word);
-  const ATT = toTamilLetters(attempt);
-  let results = Array(ATT.length).fill("INVALID");
+  const target = toTamilLetters(word);
+  const guess = toTamilLetters(attempt);
 
-  for (let i = 0; i < ATT.length; i++) {
-    let mei = ATT[i][0];
+  // pull out the exact matches from ref and mark everything else as invalid
+  let results = target.map((letter, i) => {
+    if (letter === guess[i]) {
+      target[i] = "";
+      return "FOUND";
+    }
+    return "INVALID";
+  });
 
-    // letter exists in the exact position
-    if (REF[i] === ATT[i]) {
-      results[i] = "FOUND";
-    } else if (REF.indexOf(ATT[i]) !== -1) {
+  for (let i = 0; i < guess.length; i++) {
+    if (results[i] === "FOUND") {
+      continue;
+    }
+
+    let otherPos = target.indexOf(guess[i]);
+    if (otherPos > -1) {
+      // exact match - elsewhere
       results[i] = "OTHER POSITION";
-    } else if (vowels[mei]) {
-      // MEI match
-      continue; // vowel found - no uyir mei checks
-    } else if (REF[i].includes(mei)) {
+      target[otherPos] = ""; // use up the other position match, so no more mathces are made
+    } else if (guess[i][0] === target[i][0]) {
+      // partial match - MEI
       results[i] = "MEI MATCH";
     } else if (
-      (ATT[i].length === 2 && REF[i].includes(ATT[i][1])) || // the diacritic matches
-      (ATT[i].length === 1 && REF[i].length === 1 && !vowels[ATT[i]]) // akara varisai matches (without diacritic)
+      guess[i].length === 2 &&
+      target[i].length === 2 &&
+      guess[i][1] === target[i][1] // the diacritics match
+    ) {
+      results[i] = "UYIR MATCH";
+    } else if (
+      guess[i].length === 1 &&
+      target[i].length === 1 &&
+      !vowels[target[i]] &&
+      target[i] !== "ஃ" &&
+      guess[i] !== "ஃ" &&
+      !vowels[guess[i]] // akara varisai
     ) {
       results[i] = "UYIR MATCH";
     }
   }
+
   return results;
 };
 

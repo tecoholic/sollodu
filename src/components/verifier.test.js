@@ -21,6 +21,7 @@ test("Uyir match", () => {
   expect(results).toEqual(["UYIR MATCH", "UYIR MATCH", "UYIR MATCH"]);
 
   expect(verify("க", "த")).toEqual(["UYIR MATCH"]);
+  expect(verify("க", "ஃ")).toEqual(["INVALID"]);
 });
 
 test("Mei match", () => {
@@ -29,4 +30,12 @@ test("Mei match", () => {
 
   expect(vowelOfDiacritic["\u0B82"]).toEqual("\u0B82");
   expect(vowelOfDiacritic["்"]).toEqual("்");
+});
+
+test("Don't show clues for letters that are already found", () => {
+  let resutls = verify("குறள்", "குறகு");
+  expect(resutls).toEqual(["FOUND", "FOUND", "INVALID"]);
+
+  resutls = verify("திரும்பு", "ம்ம்ம்ம்");
+  expect(resutls).toEqual(["INVALID", "INVALID", "FOUND", "INVALID"]);
 });

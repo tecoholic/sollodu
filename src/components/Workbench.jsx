@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { set as dbset, get as dbget } from "lockr";
+import React, { useState, useEffect, useRef } from "react";
 import InputBoxes from "./InputBoxes";
 import HistoryBoxes from "./HistoryBoxes";
-import verifier from "./verifier";
-
-const historykey = new Date().toDateString().replace(/ /g, "-");
+import verify from "./verifier";
 
 function Workbench({
   word,
@@ -15,22 +12,25 @@ function Workbench({
   onVerified,
   onSuccess,
 }) {
-  let oldhistory = dbget("guessHistory") || {};
-  const [guesses, setGuesses] = useState(oldhistory[historykey] || []);
+  const [guesses, setGuesses] = useState([]);
   const [highlightEmpty, setHighlightEmpty] = useState(false);
+  const verfiyBtn = useRef(null);
 
-  const verify = () => {
+  const checkWord = () => {
     if (letters.length !== length) {
       setHighlightEmpty(true);
       return;
     }
     // call the API only when all the boxes are full
-    let results = verifier(word, letters);
+    let results = verify(word, letters);
     setGuesses([...guesses, { letters, results }]);
-    let wrongLetters = letters.filter(
-      (l, i) => results[i] === "LETTER_NOT_FOUND"
-    );
+    let wrongLetters = letters.filter((l, i) => results[i] === "INVALID");
     onVerified({ wrongLetters });
+
+    if (results.reduce((p, cur) => p && cur === "FOUND", true)) {
+      onSuccess();
+    }
+    verfiyBtn.current.scrollIntoView();
   };
 
   // reset red border when user starts to type again
@@ -38,12 +38,10 @@ function Workbench({
     setHighlightEmpty(false);
   }, [letters]);
 
-  // automatically save the guesses to localstorage
+  // reset the work area if the word is changed
   useEffect(() => {
-    let history = dbget("guessHistory") || {};
-    history[historykey] = guesses;
-    dbset("guessHistory", history);
-  }, [guesses]);
+    setGuesses([]);
+  }, [word]);
 
   return (
     <div className="is-flex is-flex-direction-column is-justify-content-space-between workbench">
@@ -63,8 +61,9 @@ function Workbench({
           <div className="my-3 buttons">
             <button
               id="verify-button"
+              ref={verfiyBtn}
               className="button is-primary mx-auto"
-              onClick={() => verify()}
+              onClick={() => checkWord()}
             >
               சரிபார்
             </button>

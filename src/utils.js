@@ -75,6 +75,7 @@ export function tamilLength(word) {
 }
 
 export const PAGES = {
+  WORDSETTER: "wordsetter",
   INSTRUCTIONS: "instructions",
   SETTINGS: "settings",
   WORKBENCH: "workbench",
@@ -121,8 +122,12 @@ export function parseWordsFromQuery() {
   let params = new URLSearchParams(window.location.search);
   if (params.has("q")) {
     let encoded = params.get("q");
-    let unicode_str = b64DecodeUnicode(encoded);
-    return unicode_str.split(",");
+    try {
+      let unicode_str = b64DecodeUnicode(encoded);
+      return unicode_str.split(",");
+    } catch (e) {
+      console.log(e);
+    }
   }
   return [];
 }

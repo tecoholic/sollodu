@@ -15,29 +15,30 @@ import { PAGES } from "./utils";
 import Success from "./components/Success";
 import Joyride, { STATUS } from "react-joyride";
 import DemoSteps from "./components/JoyRide";
+import WordSetter from "./components/WordSetter";
 
 const defaultPreferences = {
   helperMode: true,
   disableKeys: true,
 };
+const words = parseWordsFromQuery();
 
 function App() {
+  const [currentWordIdx, setCurrentWordIdx] = useState(0);
+  const [wordLength, setWordLength] = useState(
+    words.length ? tamilLength(words[currentWordIdx]) : 0
+  );
+  const [attempt, setAttempt] = useState("");
+  const [blacklist, setBlackList] = useState(new Set());
+  const [settings, setSettings] = useState(dbget("userPreferences"));
+  const [runDemo, setRunDemo] = useState(false);
+  const [currentPage, setCurrentPage] = useState(
+    words.length ? PAGES.WORKBENCH : PAGES.WORDSETTER
+  );
   const [succeeded, setSucceeded] = useState(
     dbget("lastSuccess") === new Date().toDateString()
   );
-  const [currentPage, setCurrentPage] = useState(
-    dbget("lastSuccess") === new Date().toDateString()
-      ? PAGES.SUCCESS
-      : PAGES.WORKBENCH
-  );
-  const [words, setWords] = useState(parseWordsFromQuery());
-  const [wordLength, setWordLength] = useState(
-    words.length ? tamilLength(words[0]) : 0
-  );
-  const [currentWord, setCurrentWord] = useState("");
-  const [blacklist, setBlackList] = useState(new Set());
-  const [settings, setSettings] = useState(dbget("userPreferences"));
-  const [runDemo, setRunDemo] = useState(true);
+  const [attempts, setAttempts] = useState(0);
 
   if (!settings) {
     setSettings(defaultPreferences);
@@ -52,10 +53,10 @@ function App() {
   }
 
   const typeChar = (c) => {
-    let letters = toTamilLetters(currentWord);
+    let letters = toTamilLetters(attempt);
 
     if (c === "\u2190") {
-      setCurrentWord(currentWord.slice(0, currentWord.length - 1));
+      setAttempt(attempt.slice(0, attempt.length - 1));
     } else if (
       letters.length < wordLength ||
       // last letter + a diacritic
@@ -63,14 +64,15 @@ function App() {
         letters[letters.length - 1].length === 1 &&
         diacritics[c])
     ) {
-      setCurrentWord(currentWord + c);
+      setAttempt(attempt + c);
     }
   };
 
   const handleVerified = ({ wrongLetters }) => {
-    setCurrentWord("");
+    setAttempt("");
     let _black = new Set(Array.from(blacklist).concat(wrongLetters));
     setBlackList(_black);
+    setAttempts(attempts + 1);
   };
 
   const onUpdateSettings = (key, value) => {
@@ -80,11 +82,21 @@ function App() {
   useEffect(() => dbset("userPreferences", settings), [settings]);
 
   const handleSuccess = () => {
-    setCurrentWord("");
+    if (currentWordIdx < words.length - 1) {
+      // move to the next word
+      setCurrentWordIdx(currentWordIdx + 1);
+      return;
+    }
+    setAttempt("");
     setCurrentPage(PAGES.SUCCESS);
     setSucceeded(true);
-    dbset("lastSuccess", new Date().toDateString());
   };
+
+  // update the UI when the words change
+  useEffect(() => {
+    setBlackList(new Set());
+    setWordLength(tamilLength(words[currentWordIdx]));
+  }, [currentWordIdx]);
 
   const handleJoyrideCallback = (data) => {
     const { status } = data;
@@ -116,42 +128,67 @@ function App() {
         }}
         callback={handleJoyrideCallback}
       />
-      <div
-        style={{ minHeight: "100vh" }}
-        className={
-          "is-flex is-flex-direction-column" +
-          (currentPage === PAGES.WORKBENCH
-            ? " is-justify-content-space-between"
-            : "")
-        }
-      >
-        <Header onShow={handleHeaderOnShow} />
-        {currentPage === PAGES.SETTINGS ? (
-          <Settings
-            settings={settings}
-            onClose={() => setCurrentPage(PAGES.WORKBENCH)}
-            onUpdate={onUpdateSettings}
-          />
-        ) : currentPage === PAGES.SUCCESS ? (
-          <Success />
-        ) : (
-          <Workbench
-            word={words[0]}
-            length={wordLength}
-            letters={toTamilLetters(currentWord)}
-            complete={succeeded}
-            onVerified={handleVerified}
-            onSuccess={handleSuccess}
-            blacklist={settings?.helperMode ? blacklist : new Set()}
-          />
-        )}
-        {currentPage === PAGES.WORKBENCH ? (
-          <Keyboard
-            onType={(c) => typeChar(c)}
-            blacklist={settings?.disableKeys ? blacklist : new Set()}
-          />
-        ) : null}
-      </div>
+      {currentPage === PAGES.WORDSETTER ? (
+        <WordSetter />
+      ) : (
+        <div
+          style={{ minHeight: "100vh" }}
+          className={
+            "is-flex is-flex-direction-column" +
+            (currentPage === PAGES.WORKBENCH
+              ? " is-justify-content-space-between"
+              : "")
+          }
+        >
+          <Header onShow={handleHeaderOnShow} />
+          {currentPage === PAGES.SETTINGS ? (
+            <Settings
+              settings={settings}
+              onClose={() => setCurrentPage(PAGES.WORKBENCH)}
+              onUpdate={onUpdateSettings}
+            />
+          ) : currentPage === PAGES.SUCCESS ? (
+            <Success />
+          ) : (
+            <>
+              {words.length ? (
+                <div
+                  className="is-flex is-justify-content-space-between"
+                  style={{ position: "sticky", top: "60px" }}
+                >
+                  <div>
+                    <strong>சொற்கள்: </strong>
+                    {currentWordIdx + 1}/{words.length}
+                  </div>
+                  <div>
+                    <strong>முயற்சிகள்: </strong>
+                    {attempts}
+                  </div>
+                </div>
+              ) : null}
+              <Workbench
+                word={words[currentWordIdx]}
+                length={wordLength}
+                letters={toTamilLetters(attempt)}
+                complete={succeeded}
+                onVerified={handleVerified}
+                onSuccess={handleSuccess}
+                blacklist={
+                  settings && settings.helperMode ? blacklist : new Set()
+                }
+              />
+            </>
+          )}
+          {currentPage === PAGES.WORKBENCH ? (
+            <Keyboard
+              onType={(c) => typeChar(c)}
+              blacklist={
+                settings && settings.disableKeys ? blacklist : new Set()
+              }
+            />
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }
