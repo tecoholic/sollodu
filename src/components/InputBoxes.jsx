@@ -11,7 +11,7 @@ function InputBoxes({ letters, length, blacklist, highlightEmpty }) {
           letter={l}
           borderColor={
             blacklist.has(l)
-              ? "hsl(48, 100%, 29%)"
+              ? "hsl(348, 100%, 50%)"
               : highlightEmpty && !l.length
               ? "hsl(348, 100%, 61%)"
               : l.length

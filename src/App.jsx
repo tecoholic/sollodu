@@ -148,7 +148,7 @@ function App() {
               onUpdate={onUpdateSettings}
             />
           ) : currentPage === PAGES.SUCCESS ? (
-            <Success />
+            <Success words={words} attempts={attempts} />
           ) : (
             <>
               {words.length ? (

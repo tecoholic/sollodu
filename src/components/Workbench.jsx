@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import InputBoxes from "./InputBoxes";
 import HistoryBoxes from "./HistoryBoxes";
 import verify from "./verifier";
+import { toTamilLetters } from "../utils";
 
 function Workbench({
   word,
@@ -24,7 +25,10 @@ function Workbench({
     // call the API only when all the boxes are full
     let results = verify(word, letters);
     setGuesses([...guesses, { letters, results }]);
-    let wrongLetters = letters.filter((l, i) => results[i] === "INVALID");
+    let refLetters = toTamilLetters(word);
+    let wrongLetters = letters.filter(
+      (l, i) => results[i] === "INVALID" && refLetters.indexOf(l) === -1
+    );
     onVerified({ wrongLetters });
 
     if (results.reduce((p, cur) => p && cur === "FOUND", true)) {

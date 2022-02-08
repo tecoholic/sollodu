@@ -38,7 +38,7 @@ function Settings({ settings, onUpdate, onClose }) {
               <FiArrowRight />
             </span>
           </div>
-          <Cell letter="கெ" borderColor="hsl(48, 100%, 29%)" />
+          <Cell letter="கெ" borderColor="hsl(348, 100%, 50%)" />
         </div>
       </div>
 
