@@ -95,7 +95,9 @@ function App() {
   // update the UI when the words change
   useEffect(() => {
     setBlackList(new Set());
-    setWordLength(tamilLength(words[currentWordIdx]));
+    if (words.length) {
+      setWordLength(tamilLength(words[currentWordIdx]));
+    }
   }, [currentWordIdx]);
 
   const handleJoyrideCallback = (data) => {

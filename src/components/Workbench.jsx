@@ -16,6 +16,7 @@ function Workbench({
   const [guesses, setGuesses] = useState([]);
   const [highlightEmpty, setHighlightEmpty] = useState(false);
   const verfiyBtn = useRef(null);
+  const [readyForSuccess, setReadyForSuccess] = useState(false);
 
   const checkWord = () => {
     if (letters.length !== length) {
@@ -32,9 +33,17 @@ function Workbench({
     onVerified({ wrongLetters });
 
     if (results.reduce((p, cur) => p && cur === "FOUND", true)) {
-      onSuccess();
+      setReadyForSuccess(true);
     }
     verfiyBtn.current.scrollIntoView();
+  };
+
+  const handleVerifyBtn = () => {
+    if (readyForSuccess) {
+      onSuccess();
+      return;
+    }
+    checkWord();
   };
 
   // reset red border when user starts to type again
@@ -45,6 +54,7 @@ function Workbench({
   // reset the work area if the word is changed
   useEffect(() => {
     setGuesses([]);
+    setReadyForSuccess(false);
   }, [word]);
 
   return (
@@ -56,20 +66,22 @@ function Workbench({
       </div>
       {!complete ? (
         <div>
-          <InputBoxes
-            length={length}
-            letters={letters}
-            highlightEmpty={highlightEmpty}
-            blacklist={blacklist}
-          />
+          {!readyForSuccess ? (
+            <InputBoxes
+              length={length}
+              letters={letters}
+              highlightEmpty={highlightEmpty}
+              blacklist={blacklist}
+            />
+          ) : null}
           <div className="my-3 buttons">
             <button
               id="verify-button"
               ref={verfiyBtn}
               className="button is-primary mx-auto"
-              onClick={() => checkWord()}
+              onClick={handleVerifyBtn}
             >
-              சரிபார்
+              {readyForSuccess ? "அடுத்த சொல்" : "சரிபார்"}
             </button>
           </div>
         </div>

@@ -14,9 +14,9 @@ function WordSetter() {
       return;
     }
     if (device === "this") {
-      window.location = `/?q=${hash}`;
+      window.location = `/sollodu/?q=${hash}`;
     } else {
-      let url = `${window.location.origin}/?q=${hash}`;
+      let url = `${window.location.origin}/sollodu/?q=${hash}`;
 
       if (navigator.share) {
         navigator.share({ url });
@@ -38,7 +38,7 @@ function WordSetter() {
   return (
     <div>
       <h1 className="h1 has-text-centered py-5 has-text-weight-bold">
-        சொல்லொடு
+        சொல்லோடு
       </h1>
       {!device ? (
         <div className="section has-text-centered">

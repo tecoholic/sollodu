@@ -22,7 +22,7 @@ function Success({ words, attempts }) {
   };
 
   return (
-    <div className="card">
+    <div className="card" style={{ marginTop: "30vh" }}>
       <header className="card-header">
         <p className="card-header-title">
           <span className="has-text-centered mx-auto">
@@ -31,9 +31,10 @@ function Success({ words, attempts }) {
         </p>
       </header>
       <div className="card-content">
-        <p className="has-text-centered">
-          கொடுக்கப்பட்ட {words.length} சொற்களையும் {attempts} முயற்சிகளில்
-          கண்டுபிடித்து விட்டீர்கள்.
+        <p className="has-text-centered my-6">
+          கொடுக்கப்பட்ட <span className="tag is-dark">{words.length}</span>{" "}
+          சொற்களையும் <span className="tag is-dark">{attempts}</span>{" "}
+          முயற்சிகளில் கண்டுபிடித்து விட்டீர்கள்.
         </p>
         <div className="is-flex is-flex-direction-column">
           {guesses.map(({ results }, i) => (
@@ -49,7 +50,7 @@ function Success({ words, attempts }) {
           className="card-footer-item is-ghost"
           onClick={() => triggerShare()}
         >
-          📣️ பகிர்
+          📣️ பகிரவும்
         </button>
       </footer>
     </div>
